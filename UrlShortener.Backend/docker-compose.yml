@@ -1,0 +1,77 @@
+services:
+  urlshortener.api:
+    image: ${DOCKER_REGISTRY-}urlshortenerapi
+    container_name: urlshortener-api
+    build:
+      context: .
+      dockerfile: UrlShortener.Api/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+    environment:
+      # Seq
+      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://urlshortener.backend.api.seq:5341/ingest/otlp
+      #- OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      # Aspire Dashboard
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://urlshortener.backend.api.aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+  tokenrangegenerator.api:
+    image: ${DOCKER_REGISTRY-}tokenrangegeneratorapi
+    container_name: tokenrangegenerator-api
+    build:
+      context: .
+      dockerfile: TokenRangeGenerator.Api/Dockerfile
+    ports:
+      - 6000:8080
+      - 6001:8081
+    environment:
+      # Seq
+      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://urlshortener.backend.api.seq:5341/ingest/otlp
+      #- OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      # Aspire Dashboard
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://urlshortener.backend.api.aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+  urlshortener.backend.seq:
+    image: datalust/seq:2024.3 # or latest
+    container_name: urlshortener-backend-seq
+    environment:
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./.containers/seq_data:/data
+    ports:
+      - 8080:80
+      - 5341:5341
+
+  urlshortener.backend.aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    container_name: urlshortener-backend-aspire-dashboard
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
+    ports:
+      - 18888:18888
+
+  tokenrangegenerator.db:
+    image: postgres:latest
+    container_name: postgres-token-range-generator
+    environment:
+      - POSTGRES_DB=token-range-generator
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/db:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+
+  urlshortener.db:
+    image: postgres:latest
+    container_name: postgres-urlshortener
+    environment:
+      - POSTGRES_DB=urlshortener
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
