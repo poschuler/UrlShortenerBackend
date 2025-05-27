@@ -1,6 +1,13 @@
-@TokenRangeGenerator.Api_HostAddress = http://localhost:9000
+@TokenRangeGenerator.Api_HostAddress = http://localhost:6000
 
-GET {{TokenRangeGenerator.Api_HostAddress}}/weatherforecast/
+POST {{TokenRangeGenerator.Api_HostAddress}}/token-range/
+Content-Type: application/json
 Accept: application/json
+
+{
+  "size": 100,
+  "requestServerId": "test-server"
+}
+
 
 ###

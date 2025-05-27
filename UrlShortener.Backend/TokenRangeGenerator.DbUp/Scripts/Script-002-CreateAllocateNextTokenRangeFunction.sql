@@ -1,5 +1,6 @@
 CREATE OR REPLACE FUNCTION allocate_next_token_range(
     p_server_id VARCHAR(255),
+    p_request_server_id VARCHAR(255),
     p_range_size BIGINT DEFAULT 1000
 )
 RETURNS TABLE (allocated_range_start BIGINT, allocated_range_end BIGINT, message TEXT) AS $$
@@ -24,8 +25,8 @@ BEGIN
     END IF;
     new_end := new_start + p_range_size - 1;
 
-    INSERT INTO token_ranges (range_start, range_end, server_id)
-    VALUES (new_start, new_end, p_server_id)
+    INSERT INTO token_ranges (range_start, range_end, server_id, request_server_id)
+    VALUES (new_start, new_end, p_server_id, p_request_server_id)
     RETURNING token_ranges.range_start, token_ranges.range_end
     INTO allocated_range_start, allocated_range_end;
 

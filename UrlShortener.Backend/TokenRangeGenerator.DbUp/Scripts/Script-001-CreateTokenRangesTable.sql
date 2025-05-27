@@ -5,7 +5,8 @@ CREATE TABLE token_ranges (
     range_start BIGINT NOT NULL,
     range_end BIGINT NOT NULL,
     server_id VARCHAR(255),
-    "generated_on_utc" timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    request_server_id VARCHAR(255),
+    created_on_utc timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     CONSTRAINT range_positive_start CHECK (range_start > 0),
     CONSTRAINT range_end_after_start CHECK (range_end >= range_start),
