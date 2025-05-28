@@ -10,5 +10,5 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "LongUrl": "http://poschuler.com"
+  "longUrl": "http://poschuler.com"
 }
